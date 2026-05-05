@@ -11,24 +11,6 @@
 
 const TYPES = ['credit', 'debit', 'transfer'];
 
-// fonction utilitaire (utilisée nulle part ailleurs ?)
-function fmt(d) {
-  let dd = d.getDate();
-  let mm = d.getMonth() + 1;
-  const yyyy = d.getFullYear();
-  if (dd < 10) dd = '0' + dd;
-  if (mm < 10) mm = '0' + mm;
-  return dd + '/' + mm + '/' + yyyy;
-}
-
-// fonction utilitaire bis (faut-il vraiment deux fonctions de format ?)
-function formatDate2(date) {
-  const d = date.getDate();
-  const m = date.getMonth() + 1;
-  const y = date.getFullYear();
-  return (d < 10 ? '0' + d : d) + '/' + (m < 10 ? '0' + m : m) + '/' + y;
-}
-
 // THE function
 export function processTransactions(txs, opts) {
   const result = [];
@@ -39,7 +21,7 @@ export function processTransactions(txs, opts) {
   let nbDebit = 0;
   const errors = [];
   const warnings = [];
-  let i, j, k;
+  let i, j;
   let tx;
   let rate;
   let converted;
@@ -179,7 +161,6 @@ export function processTransactions(txs, opts) {
     // construction de l'objet de sortie
     const item = {};
     item.id = tx.id;
-    item.date = fmt(d);
     item.label = tx.label || '(sans libellé)';
     item.amount = converted;
     item.originalAmount = tx.amount;
@@ -224,12 +205,4 @@ export function processTransactions(txs, opts) {
     errors,
     warnings,
   };
-}
-
-// helper utilisé nulle part (dead code ?)
-export function legacyHelper(x) {
-  if (x === null) return null;
-  if (x === undefined) return undefined;
-  if (typeof x === 'string') return x.trim();
-  return x;
 }
