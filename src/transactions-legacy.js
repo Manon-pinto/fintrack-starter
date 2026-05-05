@@ -9,13 +9,13 @@
 
 // ============================================================================
 
-var TYPES = ['credit', 'debit', 'transfer'];
+const TYPES = ['credit', 'debit', 'transfer'];
 
 // fonction utilitaire (utilisée nulle part ailleurs ?)
 function fmt(d) {
-  var dd = d.getDate();
-  var mm = d.getMonth() + 1;
-  var yyyy = d.getFullYear();
+  let dd = d.getDate();
+  let mm = d.getMonth() + 1;
+  const yyyy = d.getFullYear();
   if (dd < 10) dd = '0' + dd;
   if (mm < 10) mm = '0' + mm;
   return dd + '/' + mm + '/' + yyyy;
@@ -23,30 +23,27 @@ function fmt(d) {
 
 // fonction utilitaire bis (faut-il vraiment deux fonctions de format ?)
 function formatDate2(date) {
-  var d = date.getDate();
-  var m = date.getMonth() + 1;
-  var y = date.getFullYear();
+  const d = date.getDate();
+  const m = date.getMonth() + 1;
+  const y = date.getFullYear();
   return (d < 10 ? '0' + d : d) + '/' + (m < 10 ? '0' + m : m) + '/' + y;
 }
 
 // THE function
 export function processTransactions(txs, opts) {
-  var result = [];
-  var total = 0;
-  var totalCredit = 0;
-  var totalDebit = 0;
-  var nbCredit = 0;
-  var nbDebit = 0;
-  var errors = [];
-  var warnings = [];
-  var i, j, k;
-  var tx;
-  var rate;
-  var converted;
-  var category;
-  var month;
-  var year;
-  var threshold;
+  const result = [];
+  let total = 0;
+  let totalCredit = 0;
+  let totalDebit = 0;
+  let nbCredit = 0;
+  let nbDebit = 0;
+  const errors = [];
+  const warnings = [];
+  let i, j, k;
+  let tx;
+  let rate;
+  let converted;
+  let category;
 
   // si pas d'options on met des valeurs par défaut
   if (!opts) {
@@ -65,16 +62,16 @@ export function processTransactions(txs, opts) {
     opts.threshold = 1000;
   }
 
-  threshold = opts.threshold;
-  month = opts.month;
-  year = opts.year;
+  const threshold = opts.threshold;
+  const month = opts.month;
+  const year = opts.year;
 
   // boucle principale
   for (i = 0; i < txs.length; i++) {
     tx = txs[i];
 
     // on filtre par mois et par année
-    var d = new Date(tx.date);
+    const d = new Date(tx.date);
     if (d.getMonth() !== month) {
       continue;
     }
@@ -83,7 +80,7 @@ export function processTransactions(txs, opts) {
     }
 
     // on vérifie le type
-    var typeOk = false;
+    let typeOk = false;
     for (j = 0; j < TYPES.length; j++) {
       if (TYPES[j] === tx.type) {
         typeOk = true;
@@ -129,14 +126,26 @@ export function processTransactions(txs, opts) {
 
     // catégorisation manuelle (devrait être dans la donnée mais bon...)
     if (tx.label) {
-      var lab = tx.label.toLowerCase();
+      const lab = tx.label.toLowerCase();
       if (lab.indexOf('loyer') >= 0 || lab.indexOf('rent') >= 0) {
         category = 'logement';
-      } else if (lab.indexOf('course') >= 0 || lab.indexOf('groce') >= 0 || lab.indexOf('super') >= 0) {
+      } else if (
+        lab.indexOf('course') >= 0 ||
+        lab.indexOf('groce') >= 0 ||
+        lab.indexOf('super') >= 0
+      ) {
         category = 'alimentation';
-      } else if (lab.indexOf('essence') >= 0 || lab.indexOf('gas') >= 0 || lab.indexOf('uber') >= 0) {
+      } else if (
+        lab.indexOf('essence') >= 0 ||
+        lab.indexOf('gas') >= 0 ||
+        lab.indexOf('uber') >= 0
+      ) {
         category = 'transport';
-      } else if (lab.indexOf('netflix') >= 0 || lab.indexOf('spotify') >= 0 || lab.indexOf('cinema') >= 0) {
+      } else if (
+        lab.indexOf('netflix') >= 0 ||
+        lab.indexOf('spotify') >= 0 ||
+        lab.indexOf('cinema') >= 0
+      ) {
         category = 'loisirs';
       } else if (lab.indexOf('salaire') >= 0 || lab.indexOf('salary') >= 0) {
         category = 'revenu';
@@ -149,7 +158,9 @@ export function processTransactions(txs, opts) {
 
     // alertes
     if (converted > threshold && tx.type === 'debit') {
-      warnings.push('transaction ' + i + ' depasse le seuil (' + converted + ' > ' + threshold + ')');
+      warnings.push(
+        'transaction ' + i + ' depasse le seuil (' + converted + ' > ' + threshold + ')',
+      );
     }
 
     // calculs
@@ -166,7 +177,7 @@ export function processTransactions(txs, opts) {
     }
 
     // construction de l'objet de sortie
-    var item = {};
+    const item = {};
     item.id = tx.id;
     item.date = fmt(d);
     item.label = tx.label || '(sans libellé)';
@@ -176,42 +187,42 @@ export function processTransactions(txs, opts) {
     item.currency = opts.currency;
     item.type = tx.type;
     item.category = category;
-    item.flagged = (converted > threshold && tx.type === 'debit');
+    item.flagged = converted > threshold && tx.type === 'debit';
     result.push(item);
   }
 
   // tri par date (un peu pourri mais ça marche)
-  result.sort(function (a, b) {
-    var pa = a.date.split('/');
-    var pb = b.date.split('/');
-    var da = new Date(pa[2], pa[1] - 1, pa[0]);
-    var db = new Date(pb[2], pb[1] - 1, pb[0]);
+  result.sort((a, b) => {
+    const pa = a.date.split('/');
+    const pb = b.date.split('/');
+    const da = new Date(pa[2], pa[1] - 1, pa[0]);
+    const db = new Date(pb[2], pb[1] - 1, pb[0]);
     if (da < db) return -1;
     if (da > db) return 1;
     return 0;
   });
 
   // moyenne (au cas ou)
-  var avgCredit = 0;
+  let avgCredit = 0;
   if (nbCredit > 0) {
     avgCredit = totalCredit / nbCredit;
   }
-  var avgDebit = 0;
+  let avgDebit = 0;
   if (nbDebit > 0) {
     avgDebit = totalDebit / nbDebit;
   }
 
   return {
     transactions: result,
-    total: total,
-    totalCredit: totalCredit,
-    totalDebit: totalDebit,
-    nbCredit: nbCredit,
-    nbDebit: nbDebit,
-    avgCredit: avgCredit,
-    avgDebit: avgDebit,
-    errors: errors,
-    warnings: warnings
+    total,
+    totalCredit,
+    totalDebit,
+    nbCredit,
+    nbDebit,
+    avgCredit,
+    avgDebit,
+    errors,
+    warnings,
   };
 }
 
