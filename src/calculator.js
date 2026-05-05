@@ -28,10 +28,10 @@ export function multiply(a, b) {
 }
 
 /**
- * Divise a par b.
- * BUG LATENT : ne gère pas la division par zéro (retourne Infinity ou NaN).
+ * Divise a par b. Lève une erreur explicite si b vaut zéro.
  */
 export function divide(a, b) {
+  if (b === 0) throw new Error('Division par zéro interdite');
   return a / b;
 }
 
@@ -103,4 +103,19 @@ export function formatAmount(amount, currency = 'EUR') {
   const symbols = { EUR: '€', USD: '$', GBP: '£' };
   const symbol = symbols[currency] || currency;
   return amount.toFixed(2) + ' ' + symbol;
+}
+
+/**
+ * Calcule l'intérêt simple accumulé depuis une date de départ jusqu'à aujourd'hui.
+ *   principal      : capital initial
+ *   annualRatePct  : taux annuel en pourcentage
+ *   startTimestamp : timestamp ms de la date de départ (ex: Date.now())
+ *
+ * Utilise Date.now() en interne pour obtenir la date courante.
+ */
+export function interestSinceDate(principal, annualRatePct, startTimestamp) {
+  const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000;
+  const elapsed = Date.now() - startTimestamp;
+  const years = elapsed / MS_PER_YEAR;
+  return principal * (annualRatePct / 100) * years;
 }
