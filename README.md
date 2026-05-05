@@ -1,5 +1,7 @@
 # FinTrack
 
+[![CI](https://github.com/Manon-pinto/fintrack-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/Manon-pinto/fintrack-starter/actions/workflows/ci.yml)
+
 Application de gestion de budget personnel.
 
 ## Stack
@@ -33,4 +35,4 @@ L'appli est dispo sur http://localhost:5173.
 
 ---
 
-*Projet fil rouge B3 Dev — My Digital School Bordeaux*
+_Projet fil rouge B3 Dev — My Digital School Bordeaux_
