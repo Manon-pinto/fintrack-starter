@@ -12,12 +12,12 @@ function dateInLastMonth() {
 }
 
 // Cycle 1 : tableau vide retourne juste l'en-tête
-test('returns CSV header when given an empty array', () => {
+test('given an empty transaction list, when exporting, then returns only the CSV header', () => {
   expect(transactionsToCSV([])).toBe('date,libelle,montant,categorie');
 });
 
 // Cycle 2 : chaque transaction devient une ligne CSV
-test('each transaction becomes a CSV row', () => {
+test('given one transaction, when exporting, then it appears as a CSV row below the header', () => {
   const transactions = [{ date: '2026-05-01', label: 'Loyer', amount: 800, category: 'logement' }];
   expect(transactionsToCSV(transactions)).toBe(
     'date,libelle,montant,categorie\n2026-05-01,Loyer,800,logement',
@@ -25,7 +25,7 @@ test('each transaction becomes a CSV row', () => {
 });
 
 // Cycle 3 : filtrage du mois en cours
-test('filters out transactions from other months', () => {
+test('given transactions from this month and last month, when exporting, then only this month is included', () => {
   const transactions = [
     { date: dateInCurrentMonth(), label: 'Loyer', amount: 800, category: 'logement' },
     { date: dateInLastMonth(), label: 'Ancien', amount: 50, category: 'autre' },
@@ -36,7 +36,7 @@ test('filters out transactions from other months', () => {
 });
 
 // Cycle 4 : échappement RFC 4180
-test('wraps field in quotes if it contains a comma', () => {
+test('given a label with a comma, when exporting, then the field is wrapped in quotes', () => {
   const transactions = [
     {
       date: dateInCurrentMonth(),
@@ -48,7 +48,7 @@ test('wraps field in quotes if it contains a comma', () => {
   expect(transactionsToCSV(transactions)).toContain('"Courses, supermarché"');
 });
 
-test('doubles internal quotes in a field', () => {
+test('given a label with internal quotes, when exporting, then quotes are doubled per RFC 4180', () => {
   const transactions = [
     { date: dateInCurrentMonth(), label: 'Achat "premium"', amount: 10, category: 'autre' },
   ];
