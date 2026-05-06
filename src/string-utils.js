@@ -1,6 +1,6 @@
-export function reverse(str) {
-  if (typeof str !== 'string') {
+export function reverse(input) {
+  if (typeof input !== 'string') {
     throw new Error('Input must be a string');
   }
-  return str.split('').reverse().join('');
+  return input.split('').reverse().join('');
 }
