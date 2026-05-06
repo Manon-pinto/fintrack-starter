@@ -52,7 +52,9 @@ export default function App() {
         <section className="cards">
           <article className="card card-balance">
             <span className="card-label">Solde</span>
-            <span className="card-value">{formatAmount(balance, 'EUR')}</span>
+            <span className="card-value" data-testid="balance">
+              {formatAmount(balance, 'EUR')}
+            </span>
           </article>
           <article className="card">
             <span className="card-label">Crédits du mois</span>
