@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { computeBalance, formatAmount, simpleInterest } from './calculator.js';
 import { seedTransactions } from './seed.js';
+import { transactionsToCSV } from './export-csv.js';
 
 export default function App() {
   const [transactions, setTransactions] = useState(seedTransactions);
@@ -71,7 +72,19 @@ export default function App() {
           <button className="btn btn-primary" onClick={() => setShowForm((s) => !s)}>
             {showForm ? 'Annuler' : 'Ajouter une transaction'}
           </button>
-          <button className="btn btn-ghost" disabled title="À implémenter en J2">
+          <button
+            className="btn btn-ghost"
+            onClick={() => {
+              const csv = transactionsToCSV(transactions);
+              const blob = new Blob([csv], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'transactions.csv';
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+          >
             Exporter en CSV
           </button>
         </section>
