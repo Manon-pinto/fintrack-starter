@@ -43,6 +43,9 @@ export default [
       'no-multiple-empty-lines': ['error', { max: 1 }],
       'no-trailing-spaces': 'error',
 
+      // React JSX
+      'react/jsx-uses-vars': 'error',
+
       // React hooks
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { computeBalance, formatAmount, simpleInterest } from './calculator.js';
 import { seedTransactions } from './seed.js';
 import { transactionsToCSV } from './export-csv.js';
@@ -167,24 +167,3 @@ export default function App() {
     </div>
   );
 }
-
-function calculateTotal(price, quantity) {
-  let total = price * quantity;
-  if (total > 100) {
-    console.log('Discount applied');
-    total = total * 0.9;
-  } else {
-    console.log('No discount');
-  }
-  return total;
-}
-
-const items = [
-  { name: 'item1', price: 30, qty: 2 },
-  { name: 'item2', price: 50, qty: 1 },
-];
-
-items.forEach((item) => {
-  const result = calculateTotal(item.price, item.qty);
-  console.log('Total for ' + item.name + ' is ' + result);
-});
