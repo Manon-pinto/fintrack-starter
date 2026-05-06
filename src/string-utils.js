@@ -1,4 +1,5 @@
 export function truncate(input, length) {
+  if (typeof input !== 'string') throw new Error('Input must be a string');
   if (input.length <= length) return input;
   return input.slice(0, length) + '...';
 }
