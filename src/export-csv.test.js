@@ -12,12 +12,12 @@ function dateInLastMonth() {
 }
 
 // Cycle 1 : tableau vide retourne juste l'en-tête
-test('given an empty transaction list, when exporting, then returns only the CSV header', () => {
+test('returns CSV header when given an empty array', () => {
   expect(transactionsToCSV([])).toBe('date,libelle,montant,categorie');
 });
 
 // Cycle 2 : chaque transaction devient une ligne CSV
-test('given one transaction, when exporting, then it appears as a CSV row below the header', () => {
+test('each transaction becomes a CSV row', () => {
   const transactions = [{ date: '2026-05-01', label: 'Loyer', amount: 800, category: 'logement' }];
   expect(transactionsToCSV(transactions)).toBe(
     'date,libelle,montant,categorie\n2026-05-01,Loyer,800,logement',
@@ -25,7 +25,7 @@ test('given one transaction, when exporting, then it appears as a CSV row below 
 });
 
 // Cycle 3 : filtrage du mois en cours
-test('given transactions from this month and last month, when exporting, then only this month is included', () => {
+test('filters out transactions from other months', () => {
   const transactions = [
     { date: dateInCurrentMonth(), label: 'Loyer', amount: 800, category: 'logement' },
     { date: dateInLastMonth(), label: 'Ancien', amount: 50, category: 'autre' },
@@ -36,7 +36,7 @@ test('given transactions from this month and last month, when exporting, then on
 });
 
 // Cycle 4 : échappement RFC 4180
-test('given a label with a comma, when exporting, then the field is wrapped in quotes', () => {
+test('wraps field in quotes if it contains a comma', () => {
   const transactions = [
     {
       date: dateInCurrentMonth(),
@@ -48,7 +48,7 @@ test('given a label with a comma, when exporting, then the field is wrapped in q
   expect(transactionsToCSV(transactions)).toContain('"Courses, supermarché"');
 });
 
-test('given a label with internal quotes, when exporting, then quotes are doubled per RFC 4180', () => {
+test('doubles internal quotes in a field', () => {
   const transactions = [
     { date: dateInCurrentMonth(), label: 'Achat "premium"', amount: 10, category: 'autre' },
   ];
