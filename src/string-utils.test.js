@@ -11,3 +11,9 @@ test('reverse "" returns ""', () => {
 test('reverse(null) throws an error', () => {
   expect(() => reverse(null)).toThrow('Input must be a string');
 });
+
+import { truncate } from './string-utils';
+
+test('truncate("hello world", 5) returns "hello..."', () => {
+  expect(truncate('hello world', 5)).toBe('hello...');
+});
