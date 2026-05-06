@@ -8,10 +8,12 @@ function escapeField(value) {
   return str;
 }
 
+function currentYearMonth() {
+  return new Date().toISOString().slice(0, 7);
+}
+
 function isCurrentMonth(dateStr) {
-  const d = new Date(dateStr);
-  const now = new Date();
-  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  return dateStr.slice(0, 7) === currentYearMonth();
 }
 
 export function transactionsToCSV(transactions) {
