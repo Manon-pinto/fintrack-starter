@@ -146,9 +146,9 @@ export default function App() {
 
         <section className="list">
           <h2>Transactions</h2>
-          <ul>
+          <ul data-testid="transaction-list">
             {transactions.map((tx) => (
-              <li key={tx.id} className="tx">
+              <li key={tx.id} className="tx" data-testid="transaction-item">
                 <span className="tx-date">{new Date(tx.date).toLocaleDateString('fr-FR')}</span>
                 <span className="tx-label">{tx.label}</span>
                 <span className={`tx-cat tx-cat-${tx.category}`}>{tx.category}</span>
