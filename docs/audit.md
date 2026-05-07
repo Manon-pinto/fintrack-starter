@@ -138,47 +138,40 @@ Les 14 tests de caractérisation passent après chaque refactoring.
 
 ## Éco-impact
 
-### Lecture du rapport Lighthouse
+### Score Lighthouse (7 mai 2026 — localhost:4173, build preview)
 
-Lighthouse mesure deux scores distincts qui n'ont rien à voir l'un avec l'autre :
+**Performance : 100 / 100**
 
-- **Performance** : est-ce que la page se charge vite ? (FCP, LCP, TBT, CLS, Speed Index)
-- **SEO** : est-ce que la page est bien référençable par Google ?
-
-Dans notre rapport, la **Performance est déjà à 100 / 100** — la page se charge en 0,3 s, sans blocage, sans décalage visuel. Il n'y a rien à améliorer côté vitesse.
-
-C'est le **SEO qui est à 82 / 100**, à cause de deux problèmes :
-1. Pas de balise `<meta name="description">` dans le HTML
-2. Le fichier `robots.txt` contient 14 erreurs
-
-Ces problèmes n'ont aucun impact sur la vitesse de l'app, mais ils pénalisent le classement dans les moteurs de recherche.
-
-### Scores Lighthouse (7 mai 2026 — localhost:4173, build preview)
-
-| Catégorie | Score mesuré (3 passes) |
-|-----------|------------------------|
-| **Performance** | 100 / 100 |
-| **SEO** | 82 / 100 |
-
-| Métrique performance | Valeur |
-|----------------------|--------|
+| Métrique | Valeur |
+|----------|--------|
 | First Contentful Paint | 0,3 s |
 | Largest Contentful Paint | 0,3 s |
 | Total Blocking Time | 0 ms |
 | Cumulative Layout Shift | 0 |
 | Speed Index | 0,3 s |
 
+La page se charge en 0,3 s, sans blocage, sans décalage visuel.
+
 ### Qu'est-ce que la pagination ?
 
-Quand une liste affiche tous ses éléments d'un coup, le navigateur doit créer autant de blocs HTML que d'éléments — même ceux qui sont hors de l'écran. Avec 18 transactions c'est imperceptible, mais avec 500 ou 1000 ça ralentit le rendu et consomme inutilement de la mémoire.
+Imagine une salle de bibliothèque avec 10 000 livres posés par terre d'un seul coup. Même si tu ne regardes que les 10 premiers, la salle est déjà encombrée et tu mets du temps à t'y retrouver. C'est exactement ce qui se passe dans un navigateur quand une liste affiche tous ses éléments sans limite.
 
-La **pagination** divise la liste en pages de taille fixe (ici 10 éléments). Au lieu de rendre 500 lignes, on en rend 10 et l'utilisateur navigue avec des boutons Précédent / Suivant. Le navigateur a moins de travail, la page reste fluide quelle que soit la taille des données.
+**La pagination, c'est ranger ces livres en rayons.** Tu n'affiches qu'une étagère à la fois — disons 10 éléments — et l'utilisateur tourne la page pour voir la suivante. Le navigateur n'a à gérer que 10 lignes, pas 10 000.
 
-### Pourquoi appliquer la pagination si la performance est déjà à 100 ?
+Concrètement, dans le code, ça se traduit par :
+- Un état `page` qui mémorise le numéro de la page courante
+- Un calcul `transactions.slice(début, fin)` pour ne prendre que la tranche visible
+- Des boutons « Précédent » / « Suivant » pour naviguer
 
-Parce que Lighthouse mesure le chargement initial avec les **18 transactions du seed**. Si l'utilisateur en ajoute 200, le score chuterait. La pagination est une mesure **préventive** : elle garantit que les performances restent bonnes à l'usage réel, pas seulement au premier chargement.
+**Ce que ça change techniquement :**
 
-### Ce qu'il faudrait corriger pour améliorer le SEO (hors périmètre de ce sprint)
+| Sans pagination | Avec pagination |
+|-----------------|----------------|
+| Le navigateur crée un nœud DOM par transaction | Il en crée 10 maximum |
+| Avec 500 transactions : 500 éléments en mémoire | Toujours 10 éléments en mémoire |
+| Le scroll, les animations et le rendu ralentissent | La fluidité reste constante |
+| Lighthouse mesure bien sur 18 items, mais l'app dégrade en vrai usage | Les performances tiennent quelle que soit la quantité de données |
 
-- Ajouter `<meta name="description" content="...">` dans `index.html`
-- Corriger le fichier `robots.txt` (14 erreurs signalées par Lighthouse)
+**Pourquoi l'appliquer si le score est déjà à 100 ?**
+
+Lighthouse mesure le chargement initial avec les 18 transactions du seed. Si l'utilisateur en ajoute 200, le score chuterait. La pagination est une mesure **préventive** : elle protège les performances à l'usage réel, pas seulement à la démo.
