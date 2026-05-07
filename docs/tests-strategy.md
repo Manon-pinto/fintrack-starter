@@ -29,6 +29,13 @@ Un test d'intégration vérifie que plusieurs composants fonctionnent correcteme
 
 **Quand préférer un test d'intégration ?**
 
+Quand plusieurs fonctions travaillent ensemble et que tester chacune séparément ne suffit pas. Par exemple, vérifier que `processTransactions()` appelle correctement `categorize()` et produit le bon résultat final — pas juste que chaque fonction retourne la bonne valeur isolément.
+
+On préfère un test d'intégration quand :
+- Le bug se cache dans la *communication* entre deux morceaux de code, pas dans l'un d'eux seul
+- Mocker les dépendances rendrait le test moins fiable que de les appeler pour de vrai
+- On veut valider un flux complet sans passer par l'interface graphique (plus rapide qu'un E2E)
+
 ---
 
 ## 3. C'est quoi un test E2E ? Son principal défaut ?
