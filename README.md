@@ -1,6 +1,8 @@
 # FinTrack
 
 [![CI](https://github.com/Manon-pinto/fintrack-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/Manon-pinto/fintrack-starter/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/tests-50%20passed-brightgreen)](src/)
+[![Coverage](https://img.shields.io/badge/coverage-Jest-blue)](src/)
 
 Application web de gestion de budget personnel. Elle permet de suivre ses transactions (dépenses et revenus), de visualiser son solde en temps réel, d'exporter ses données en CSV, et inclut un module legacy de traitement des transactions qui a fait l'objet d'un audit complet.
 
