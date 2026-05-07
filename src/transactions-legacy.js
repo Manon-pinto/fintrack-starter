@@ -11,6 +11,20 @@
 
 const TYPES = ['credit', 'debit', 'transfer'];
 
+function categorize(label) {
+  if (!label) return 'autre';
+  const lab = label.toLowerCase();
+  if (lab.indexOf('loyer') >= 0 || lab.indexOf('rent') >= 0) return 'logement';
+  if (lab.indexOf('course') >= 0 || lab.indexOf('groce') >= 0 || lab.indexOf('super') >= 0)
+    return 'alimentation';
+  if (lab.indexOf('essence') >= 0 || lab.indexOf('gas') >= 0 || lab.indexOf('uber') >= 0)
+    return 'transport';
+  if (lab.indexOf('netflix') >= 0 || lab.indexOf('spotify') >= 0 || lab.indexOf('cinema') >= 0)
+    return 'loisirs';
+  if (lab.indexOf('salaire') >= 0 || lab.indexOf('salary') >= 0) return 'revenu';
+  return 'autre';
+}
+
 const DEFAULT_THRESHOLD = 1000;
 
 const EXCHANGE_RATES = {
@@ -105,37 +119,7 @@ export function processTransactions(txs, opts) {
       converted = tx.amount;
     }
 
-    // catégorisation manuelle (devrait être dans la donnée mais bon...)
-    if (tx.label) {
-      const lab = tx.label.toLowerCase();
-      if (lab.indexOf('loyer') >= 0 || lab.indexOf('rent') >= 0) {
-        category = 'logement';
-      } else if (
-        lab.indexOf('course') >= 0 ||
-        lab.indexOf('groce') >= 0 ||
-        lab.indexOf('super') >= 0
-      ) {
-        category = 'alimentation';
-      } else if (
-        lab.indexOf('essence') >= 0 ||
-        lab.indexOf('gas') >= 0 ||
-        lab.indexOf('uber') >= 0
-      ) {
-        category = 'transport';
-      } else if (
-        lab.indexOf('netflix') >= 0 ||
-        lab.indexOf('spotify') >= 0 ||
-        lab.indexOf('cinema') >= 0
-      ) {
-        category = 'loisirs';
-      } else if (lab.indexOf('salaire') >= 0 || lab.indexOf('salary') >= 0) {
-        category = 'revenu';
-      } else {
-        category = 'autre';
-      }
-    } else {
-      category = 'autre';
-    }
+    category = categorize(tx.label);
 
     // alertes
     if (converted > threshold && tx.type === 'debit') {
