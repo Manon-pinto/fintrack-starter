@@ -3,6 +3,7 @@ import globals from 'globals';
 import pluginReact from 'eslint-plugin-react';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
 import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
+import pluginSonarjs from 'eslint-plugin-sonarjs';
 
 export default [
   {
@@ -11,6 +12,7 @@ export default [
       react: pluginReact,
       'react-hooks': pluginReactHooks,
       'jsx-a11y': pluginJsxA11y,
+      sonarjs: pluginSonarjs,
     },
     languageOptions: {
       globals: {
@@ -49,6 +51,11 @@ export default [
       // React hooks
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+
+      // SonarJS — complexité et qualité
+      'sonarjs/cognitive-complexity': ['warn', 15],
+      'sonarjs/no-duplicate-string': 'warn',
+      'sonarjs/no-identical-functions': 'warn',
     },
   },
   {
