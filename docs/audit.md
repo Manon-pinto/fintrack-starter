@@ -133,3 +133,24 @@ Les taux de change (`0.92`, `1.08`, `1.17`, `0.85`) et le seuil par défaut (`10
 Le bloc de 30 lignes de catégorisation par libellé a été extrait dans une fonction dédiée `categorize(label)` placée en tête de module. L'appel dans la boucle principale est réduit à une ligne : `category = categorize(tx.label)`. Complexité cognitive : **48 → 37**.
 
 Les 14 tests de caractérisation passent après chaque refactoring.
+
+---
+
+## Éco-impact
+
+### Score Lighthouse de départ (7 mai 2026 — localhost:4173, build preview)
+
+| Métrique | Valeur |
+|----------|--------|
+| Score Performance | **82 / 100** |
+| First Contentful Paint | 0,3 s |
+| Largest Contentful Paint | 0,3 s |
+| Total Blocking Time | 0 ms |
+| Cumulative Layout Shift | 0 |
+| Speed Index | 0,3 s |
+
+**Principal avertissement** : "Réduisez les ressources JavaScript inutilisées — économies estimées : 67 Kio". La CSS est identifiée comme bloquante au rendu (1,6 Kio, 0 ms de latence réelle).
+
+### Optimisation choisie : pagination de la liste de transactions
+
+La liste `<ul>` dans `App.jsx` rend toutes les transactions en un seul passage DOM, sans limite. Aujourd'hui 18 entrées, mais la liste grossit à chaque ajout utilisateur et pourrait atteindre des centaines d'éléments. Une pagination simple (10 transactions par page) borne le nombre de nœuds DOM créés au chargement et à chaque mise à jour, réduit le temps de calcul du layout, et limite la quantité de données gardées en mémoire par le moteur de rendu.

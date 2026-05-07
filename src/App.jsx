@@ -7,6 +7,8 @@ export default function App() {
   const [transactions, setTransactions] = useState(seedTransactions);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ label: '', amount: '', type: 'debit', category: 'autre' });
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
 
   const balance = useMemo(() => computeBalance(transactions), [transactions]);
   const totalDebit = useMemo(
@@ -36,7 +38,11 @@ export default function App() {
     setTransactions([newTx, ...transactions]);
     setForm({ label: '', amount: '', type: 'debit', category: 'autre' });
     setShowForm(false);
+    setPage(1);
   }
+
+  const totalPages = Math.ceil(transactions.length / PAGE_SIZE);
+  const visibleTransactions = transactions.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div className="app">
@@ -149,7 +155,7 @@ export default function App() {
         <section className="list">
           <h2>Transactions</h2>
           <ul data-testid="transaction-list">
-            {transactions.map((tx) => (
+            {visibleTransactions.map((tx) => (
               <li key={tx.id} className="tx" data-testid="transaction-item">
                 <span className="tx-date">{new Date(tx.date).toLocaleDateString('fr-FR')}</span>
                 <span className="tx-label">{tx.label}</span>
@@ -160,6 +166,27 @@ export default function App() {
               </li>
             ))}
           </ul>
+          {totalPages > 1 && (
+            <div className="pagination">
+              <button
+                className="btn btn-ghost"
+                onClick={() => setPage((p) => p - 1)}
+                disabled={page === 1}
+              >
+                ← Précédent
+              </button>
+              <span>
+                {page} / {totalPages}
+              </span>
+              <button
+                className="btn btn-ghost"
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page === totalPages}
+              >
+                Suivant →
+              </button>
+            </div>
+          )}
         </section>
       </main>
 
