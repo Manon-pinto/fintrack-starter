@@ -38,13 +38,13 @@ Le module exporte une seule fonction `processTransactions(txs, opts)` de 194 lig
 
 ---
 
-### [Long Method] — Priorité : Haute
+### [Long Method / Complexité cognitive excessive] — Priorité : Haute
 
 Localisation : `src/transactions-legacy.js:15`
 
-Constat : `processTransactions` fait 194 lignes et mélange 7 responsabilités dans un seul bloc séquentiel : normalisation des options, filtrage par date, validation, conversion de devises, catégorisation, calculs, tri.
+Constat : `processTransactions` fait 194 lignes. ESLint/SonarJS mesure sa complexité cognitive à **59**, soit presque 4× le seuil acceptable de 15. Elle mélange 7 responsabilités dans un seul bloc séquentiel : normalisation des options, filtrage par date, validation, conversion de devises, catégorisation, calculs, tri.
 
-Impact : impossible à tester unitairement par étape, toute modification risque de casser un effet de bord ailleurs dans la même fonction.
+Impact : impossible à tester unitairement par étape, toute modification risque de casser un effet de bord ailleurs dans la même fonction. La complexité à 59 signifie qu'il faut tenir 59 chemins d'exécution en tête simultanément pour modifier le code sans régression.
 
 Proposition : découper en fonctions dédiées — `normalizeOpts`, `filterByPeriod`, `validateTx`, `convertCurrency`, `categorize`, `computeSummary`.
 
@@ -86,15 +86,15 @@ Proposition : créer une fonction `parseDate(str)` utilisée aux deux endroits, 
 
 ---
 
-### [Unclear Naming] — Priorité : Moyenne
+### [Variable Hoisting / Portée excessive] — Priorité : Moyenne
 
 Localisation : `src/transactions-legacy.js:24–27`
 
-Constat : les variables `i`, `j`, `tx`, `rate`, `converted`, `category` sont déclarées en haut de fonction avec `var`-style et réutilisées dans toute la boucle, à la manière du C des années 90.
+Constat : `rate`, `converted`, `category` sont déclarées une fois en haut de la fonction et réassignées à chaque itération de la boucle. Elles gardent leur valeur entre les itérations — si une transaction est ignorée par `continue`, `category` conserve la valeur de la transaction précédente.
 
-Impact : dans un bloc de 200 lignes, `rate` ou `converted` peuvent signifier des choses différentes selon le contexte ; la portée étendue rend le débogage difficile.
+Impact : bug potentiel silencieux : une transaction sans libellé filtrée en milieu de boucle pourrait hériter de la catégorie de la précédente si l'ordre des gardes change. La portée étendue rend le raisonnement local impossible.
 
-Proposition : déclarer chaque variable au plus près de son utilisation avec `const` ou `let`, avec des noms explicites (`exchangeRate`, `convertedAmount`).
+Proposition : déclarer `const` à l'intérieur du bloc de la boucle, au plus près de l'usage.
 
 ---
 
@@ -119,3 +119,17 @@ Constat : l'objet `opts` regroupe 4 paramètres distincts (`currency`, `month`, 
 Impact : l'appelant ne sait pas quels champs sont attendus, lesquels sont obligatoires, ni quelles valeurs sont valides — tout repose sur la lecture du code source.
 
 Proposition : documenter le contrat avec JSDoc ou TypeScript, et ne pas muter `opts` (utiliser `const options = { ...defaults, ...opts }`).
+
+---
+
+## Refactoring effectué
+
+### Zone 1 — Magic Numbers → Named Constants (commit `b3bfff3`)
+
+Les taux de change (`0.92`, `1.08`, `1.17`, `0.85`) et le seuil par défaut (`1000`) ont été extraits en deux constantes nommées en tête de fichier : `DEFAULT_THRESHOLD` et `EXCHANGE_RATES`. La chaîne `if/else if` de conversion de devise a été remplacée par un lookup `EXCHANGE_RATES[pair] ?? 1`. Complexité cognitive : **59 → 48**.
+
+### Zone 2 — Extract Function : `categorize()` (commit `02f2857`)
+
+Le bloc de 30 lignes de catégorisation par libellé a été extrait dans une fonction dédiée `categorize(label)` placée en tête de module. L'appel dans la boucle principale est réduit à une ligne : `category = categorize(tx.label)`. Complexité cognitive : **48 → 37**.
+
+Les 14 tests de caractérisation passent après chaque refactoring.
