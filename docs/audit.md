@@ -138,19 +138,47 @@ Les 14 tests de caractérisation passent après chaque refactoring.
 
 ## Éco-impact
 
-### Score Lighthouse de départ (7 mai 2026 — localhost:4173, build preview)
+### Lecture du rapport Lighthouse
 
-| Métrique | Valeur |
-|----------|--------|
-| Score Performance | **82 / 100** |
+Lighthouse mesure deux scores distincts qui n'ont rien à voir l'un avec l'autre :
+
+- **Performance** : est-ce que la page se charge vite ? (FCP, LCP, TBT, CLS, Speed Index)
+- **SEO** : est-ce que la page est bien référençable par Google ?
+
+Dans notre rapport, la **Performance est déjà à 100 / 100** — la page se charge en 0,3 s, sans blocage, sans décalage visuel. Il n'y a rien à améliorer côté vitesse.
+
+C'est le **SEO qui est à 82 / 100**, à cause de deux problèmes :
+1. Pas de balise `<meta name="description">` dans le HTML
+2. Le fichier `robots.txt` contient 14 erreurs
+
+Ces problèmes n'ont aucun impact sur la vitesse de l'app, mais ils pénalisent le classement dans les moteurs de recherche.
+
+### Scores Lighthouse (7 mai 2026 — localhost:4173, build preview)
+
+| Catégorie | Score de départ | Score après pagination |
+|-----------|----------------|------------------------|
+| **Performance** | 100 / 100 | 100 / 100 |
+| **SEO** | 82 / 100 | 82 / 100 |
+
+| Métrique performance | Valeur |
+|----------------------|--------|
 | First Contentful Paint | 0,3 s |
 | Largest Contentful Paint | 0,3 s |
 | Total Blocking Time | 0 ms |
 | Cumulative Layout Shift | 0 |
 | Speed Index | 0,3 s |
 
-**Principal avertissement** : "Réduisez les ressources JavaScript inutilisées — économies estimées : 67 Kio". La CSS est identifiée comme bloquante au rendu (1,6 Kio, 0 ms de latence réelle).
+### Qu'est-ce que la pagination ?
 
-### Optimisation choisie : pagination de la liste de transactions
+Quand une liste affiche tous ses éléments d'un coup, le navigateur doit créer autant de blocs HTML que d'éléments — même ceux qui sont hors de l'écran. Avec 18 transactions c'est imperceptible, mais avec 500 ou 1000 ça ralentit le rendu et consomme inutilement de la mémoire.
 
-La liste `<ul>` dans `App.jsx` rend toutes les transactions en un seul passage DOM, sans limite. Aujourd'hui 18 entrées, mais la liste grossit à chaque ajout utilisateur et pourrait atteindre des centaines d'éléments. Une pagination simple (10 transactions par page) borne le nombre de nœuds DOM créés au chargement et à chaque mise à jour, réduit le temps de calcul du layout, et limite la quantité de données gardées en mémoire par le moteur de rendu.
+La **pagination** divise la liste en pages de taille fixe (ici 10 éléments). Au lieu de rendre 500 lignes, on en rend 10 et l'utilisateur navigue avec des boutons Précédent / Suivant. Le navigateur a moins de travail, la page reste fluide quelle que soit la taille des données.
+
+### Pourquoi appliquer la pagination si la performance est déjà à 100 ?
+
+Parce que Lighthouse mesure le chargement initial avec les **18 transactions du seed**. Si l'utilisateur en ajoute 200, le score chuterait. La pagination est une mesure **préventive** : elle garantit que les performances restent bonnes à l'usage réel, pas seulement au premier chargement.
+
+### Ce qu'il faudrait corriger pour améliorer le SEO (hors périmètre de ce sprint)
+
+- Ajouter `<meta name="description" content="...">` dans `index.html`
+- Corriger le fichier `robots.txt` (14 erreurs signalées par Lighthouse)
