@@ -138,19 +138,18 @@ Les 14 tests de caractérisation passent après chaque refactoring.
 
 ## Éco-impact
 
-### Score Lighthouse (7 mai 2026 — localhost:4173, build preview)
+### Score Lighthouse avant / après pagination
 
-**Performance : 100 / 100**
+| Métrique | Avant pagination | Après pagination |
+|----------|-----------------|-----------------|
+| **Score Performance** | **100 / 100** | **100 / 100** |
+| First Contentful Paint | 0,3 s | 0,3 s |
+| Largest Contentful Paint | 0,3 s | 0,3 s |
+| Total Blocking Time | 0 ms | 0 ms |
+| Cumulative Layout Shift | 0 | 0 |
+| Speed Index | 0,3 s | 0,3 s |
 
-| Métrique | Valeur |
-|----------|--------|
-| First Contentful Paint | 0,3 s |
-| Largest Contentful Paint | 0,3 s |
-| Total Blocking Time | 0 ms |
-| Cumulative Layout Shift | 0 |
-| Speed Index | 0,3 s |
-
-La page se charge en 0,3 s, sans blocage, sans décalage visuel.
+Le score ne change pas car Lighthouse mesure le chargement initial avec seulement 18 transactions — trop peu pour observer une différence. L'optimisation protège les performances **à l'usage réel**, quand la liste grossit.
 
 ### Qu'est-ce que la pagination ?
 
