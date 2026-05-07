@@ -155,10 +155,10 @@ Ces problèmes n'ont aucun impact sur la vitesse de l'app, mais ils pénalisent 
 
 ### Scores Lighthouse (7 mai 2026 — localhost:4173, build preview)
 
-| Catégorie | Score de départ | Score après pagination |
-|-----------|----------------|------------------------|
-| **Performance** | 100 / 100 | 100 / 100 |
-| **SEO** | 82 / 100 | 82 / 100 |
+| Catégorie | Score mesuré (3 passes) |
+|-----------|------------------------|
+| **Performance** | 100 / 100 |
+| **SEO** | 82 / 100 |
 
 | Métrique performance | Valeur |
 |----------------------|--------|
